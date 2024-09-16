@@ -71,51 +71,42 @@ window.DRAWIO_CONFIG = window.DRAWIO_CONFIG || null;
 // save a GET request. This requires that all resources be present in
 // the special bundle.
 window.mxLoadResources = window.mxLoadResources || false;
-window.mxLanguage = window.mxLanguage || (function() 
-{
+window.mxLanguage = window.mxLanguage || (function () {
 	var lang = urlParams['lang'];
-	
+
 	// Known issue: No JSON object at this point in quirks in IE8
-	if (lang == null && typeof(JSON) != 'undefined')
-	{
+	if (lang == null && typeof (JSON) != 'undefined') {
 		// Cannot use mxSettings here
-		if (isLocalStorage) 
-		{
-			try
-			{
+		if (isLocalStorage) {
+			try {
 				var value = localStorage.getItem('.drawio-config');
-				
-				if (value != null)
-				{
+
+				if (value != null) {
 					lang = JSON.parse(value).language || null;
 				}
-				
-				if (!lang && window.mxIsElectron)
-				{
+
+				if (!lang && window.mxIsElectron) {
 					lang = urlParams['appLang'];
-					
-					if (lang != null)
-			    	{
-			    		var dash = lang.indexOf('-');
-			    		
-			    		if (dash >= 0)
-			    		{
-			    			lang = lang.substring(0, dash);
-			    		}
-			    		
-			    		lang = lang.toLowerCase();
-			    	}
+
+					if (lang != null) {
+						var dash = lang.indexOf('-');
+
+						if (dash >= 0) {
+							lang = lang.substring(0, dash);
+						}
+
+						lang = lang.toLowerCase();
+					}
 				}
 			}
-			catch (e)
-			{
+			catch (e) {
 				// cookies are disabled, attempts to use local storage will cause
 				// a DOM error at a minimum on Chrome
 				isLocalStorage = false;
 			}
 		}
 	}
-	
+
 	return lang;
 })();
 
@@ -124,92 +115,137 @@ window.mxLanguage = window.mxLanguage || (function()
 window.mxLanguageMap = window.mxLanguageMap ||
 {
 	'i18n': '',
-	'id' : 'Bahasa Indonesia',
-	'ms' : 'Bahasa Melayu',
-	'bs' : 'Bosanski',
-	'bg' : 'Bulgarian',
-	'ca' : 'Català',
-	'cs' : 'Čeština',
-	'da' : 'Dansk',
-	'de' : 'Deutsch',
-	'et' : 'Eesti',
-	'en' : 'English',
-	'es' : 'Español',
-	'eu' : 'Euskara',
-	'fil' : 'Filipino',
-	'fr' : 'Français',
-	'gl' : 'Galego',
-	'it' : 'Italiano',
-	'hu' : 'Magyar',
-	'lt' : 'Lietuvių',
-	'lv' : 'Latviešu',
-	'nl' : 'Nederlands',
-	'no' : 'Norsk',
-	'pl' : 'Polski',
-	'pt-br' : 'Português (Brasil)',
-	'pt' : 'Português (Portugal)',
-	'ro' : 'Română',
-	'fi' : 'Suomi',
-	'sv' : 'Svenska',
-	'vi' : 'Tiếng Việt',
-	'tr' : 'Türkçe',
-	'el' : 'Ελληνικά',
-	'ru' : 'Русский',
-	'sr' : 'Српски',
-	'uk' : 'Українська',
-	'he' : 'עברית',
-	'ar' : 'العربية',
-	'fa' : 'فارسی',
-	'th' : 'ไทย',
-	'ko' : '한국어',
-	'ja' : '日本語',
-	'zh' : '简体中文',
-	'zh-tw' : '繁體中文'
+	'id': 'Bahasa Indonesia',
+	'ms': 'Bahasa Melayu',
+	'bs': 'Bosanski',
+	'bg': 'Bulgarian',
+	'ca': 'Català',
+	'cs': 'Čeština',
+	'da': 'Dansk',
+	'de': 'Deutsch',
+	'et': 'Eesti',
+	'en': 'English',
+	'es': 'Español',
+	'eu': 'Euskara',
+	'fil': 'Filipino',
+	'fr': 'Français',
+	'gl': 'Galego',
+	'it': 'Italiano',
+	'hu': 'Magyar',
+	'lt': 'Lietuvių',
+	'lv': 'Latviešu',
+	'nl': 'Nederlands',
+	'no': 'Norsk',
+	'pl': 'Polski',
+	'pt-br': 'Português (Brasil)',
+	'pt': 'Português (Portugal)',
+	'ro': 'Română',
+	'fi': 'Suomi',
+	'sv': 'Svenska',
+	'vi': 'Tiếng Việt',
+	'tr': 'Türkçe',
+	'el': 'Ελληνικά',
+	'ru': 'Русский',
+	'sr': 'Српски',
+	'uk': 'Українська',
+	'he': 'עברית',
+	'ar': 'العربية',
+	'fa': 'فارسی',
+	'th': 'ไทย',
+	'ko': '한국어',
+	'ja': '日本語',
+	'zh': '简体中文',
+	'zh-tw': '繁體中文'
 };
 
-if (typeof window.mxBasePath === 'undefined')
-{
+if (typeof window.mxBasePath === 'undefined') {
 	window.mxBasePath = 'mxgraph';
 	window.mxImageBasePath = 'mxgraph/images';
 }
 
-if (window.mxLanguages == null)
-{
+if (window.mxLanguages == null) {
 	window.mxLanguages = [];
-	
+
 	// Populates the list of supported special language bundles
-	for (var lang in mxLanguageMap)
-	{
+	for (var lang in mxLanguageMap) {
 		// Empty means default (ie. browser language), "en" means English (default for unsupported languages)
 		// Since "en" uses no extension this must not be added to the array of supported language bundles.
-		if (lang != 'en')
-		{
+		if (lang != 'en') {
 			window.mxLanguages.push(lang);
 		}
 	}
+	/* 👇 SIYUAN 👇 */
+	// 设置语言
+	if (window.mxLanguage == null && window.mxIsSiyuan) {
+		switch (window.top.siyuan?.config.appearance.lang) {
+			case 'en_US':
+				window.mxLanguage = 'en';
+				break;
+			case 'es_ES':
+				window.mxLanguage = 'es';
+				break;
+			case 'fr_FR':
+				window.mxLanguage = 'fr';
+				break;
+			case 'zh_CN':
+				window.mxLanguage = 'zh';
+				break;
+			case 'zh_CHT':
+				window.mxLanguage = 'zh-tw';
+				break;
+			default:
+				let lang = navigator.language;
+				switch (true) {
+					case lang.startsWith("zh-CNS"):
+						window.mxLanguage = "zh";
+						break;
+					case lang.startsWith("zh-CNT"):
+						window.mxLanguage = "zh-tw";
+						break;
 
+					case lang.startsWith("zh-Hans"):
+					case lang.startsWith("zh-CN"):
+					case lang.startsWith("zh-SG"):
+						window.mxLanguage = "zh";
+						break;
+
+					case lang.startsWith("zh-Hant"):
+					case lang.startsWith("zh-TW"):
+					case lang.startsWith("zh-HK"):
+					case lang.startsWith("zh-MO"):
+						window.mxLanguage = "zh-tw";
+						break;
+
+					case lang.startsWith("zh"):
+						window.mxLanguage = "zh";
+						break;
+
+					default:
+						window.mxLanguage = window.mxLanguages.find(l => lang.startsWith(l));
+						break;
+				}
+				break;
+		}
+	}
+	/* 👆 SIYUAN 👆 */
 	// Uses browser language if supported
 	if (window.mxLanguage == null &&
 		(window.location.hostname == 'test.draw.io' ||
-		window.location.hostname == 'www.draw.io' ||
-		window.location.hostname == 'viewer.diagrams.net' ||
-		window.location.hostname == 'embed.diagrams.net' ||
-		window.location.hostname == 'app.diagrams.net' ||
-		window.location.hostname == 'jgraph.github.io'))
-	{
+			window.location.hostname == 'www.draw.io' ||
+			window.location.hostname == 'viewer.diagrams.net' ||
+			window.location.hostname == 'embed.diagrams.net' ||
+			window.location.hostname == 'app.diagrams.net' ||
+			window.location.hostname == 'jgraph.github.io')) {
 		var lang = navigator.language;
 
-		if (lang != null)
-		{
+		if (lang != null) {
 			var dash = lang.indexOf('-');
-				
-			if (dash > 0)
-			{
+
+			if (dash > 0) {
 				lang = lang.substring(0, dash);
 			}
 
-			if (window.mxLanguages.indexOf(lang) >= 0)
-			{
+			if (window.mxLanguages.indexOf(lang) >= 0) {
 				window.mxLanguage = lang;
 			}
 		}
@@ -218,14 +254,12 @@ if (window.mxLanguages == null)
 
 //Disable Google Drive when running in a WebView (e.g, MS Teams App) Since auth doesn't work with disallowd_useragent
 //[For MS Teams only] TODO Check if other apps are affected also (android and iOS)
-if (urlParams['extAuth'] == '1' && /((iPhone|iPod|iPad).*AppleWebKit(?!.*Version)|; wv)/i.test(navigator.userAgent))
-{
+if (urlParams['extAuth'] == '1' && /((iPhone|iPod|iPad).*AppleWebKit(?!.*Version)|; wv)/i.test(navigator.userAgent)) {
 	urlParams['gapi'] = '0';
 	urlParams['noDevice'] = '1';
 	//Force viewer only
 	//TODO This should always be for MS Teams only
-	if (urlParams['lightbox'] != '1')
-	{
+	if (urlParams['lightbox'] != '1') {
 		urlParams['lightbox'] = '1';
 		urlParams['layers'] = '1';
 		urlParams['viewerOnlyMsg'] = '1';
@@ -233,20 +267,17 @@ if (urlParams['extAuth'] == '1' && /((iPhone|iPod|iPad).*AppleWebKit(?!.*Version
 }
 
 // Uses lightbox mode on viewer domain
-if (window.location.hostname == 'viewer.diagrams.net')
-{
+if (window.location.hostname == 'viewer.diagrams.net') {
 	urlParams['lightbox'] = '1';
-}	
+}
 
 // Lightbox enables chromeless mode
-if (urlParams['lightbox'] == '1')
-{
+if (urlParams['lightbox'] == '1') {
 	urlParams['chrome'] = '0';
 }
 
 // Embed inline is embed mode and sketch UI
-if (urlParams['embedInline'] == '1')
-{
+if (urlParams['embedInline'] == '1') {
 	urlParams['embed'] = '1';
 	urlParams['ui'] = 'sketch';
 	urlParams['plugins'] = '0';
@@ -257,157 +288,131 @@ if (urlParams['embedInline'] == '1')
 /**
  * Global function for loading local files via servlet
  */
-function setCurrentXml(data, filename)
-{
-	if (window.parent != null && window.parent.openFile != null)
-	{
+function setCurrentXml(data, filename) {
+	if (window.parent != null && window.parent.openFile != null) {
 		window.parent.openFile.setData(data, filename);
 	}
 };
- 
+
 /**
  * Returns the global UI setting before running static draw.io code
  */
-window.uiTheme = window.uiTheme || (function() 
-{
+window.uiTheme = window.uiTheme || (function () {
 	var ui = urlParams['ui'];
 
 	//Use Sketch theme for MS Teams (and any future extAuth) by default
-	if (urlParams['extAuth'] == '1')
-	{
+	if (urlParams['extAuth'] == '1') {
 		ui = 'sketch';
 	}
 
 	// Known issue: No JSON object at this point in quirks in IE8
-	if (ui == null && isLocalStorage && typeof JSON !== 'undefined' && urlParams['lightbox'] != '1')
-	{
-		try
-		{
+	if (ui == null && isLocalStorage && typeof JSON !== 'undefined' && urlParams['lightbox'] != '1') {
+		try {
 			var value = localStorage.getItem('.drawio-config');
-			
-			if (value != null)
-			{
+
+			if (value != null) {
 				ui = JSON.parse(value).ui || null;
 			}
 		}
-		catch (e)
-		{
+		catch (e) {
 			// cookies are disabled, attempts to use local storage will cause
 			// a DOM error at a minimum on Chrome
 			isLocalStorage = false;
 		}
 	}
-	
+
 	// Uses simple theme on small screens in own domain standalone app
-	try
-	{
+	try {
 		if (ui == null && urlParams['embed'] != '1' &&
 			(urlParams['dev'] == 1 || urlParams['test'] == 1 ||
-			window.location.hostname === 'test.draw.io' ||
-			window.location.hostname === 'www.draw.io' ||
-			window.location.hostname === 'preprod.diagrams.net' ||
-			window.location.hostname === 'app.diagrams.net' ||
-			window.location.hostname === 'jgraph.github.io'))
-		{
+				window.location.hostname === 'test.draw.io' ||
+				window.location.hostname === 'www.draw.io' ||
+				window.location.hostname === 'preprod.diagrams.net' ||
+				window.location.hostname === 'app.diagrams.net' ||
+				window.location.hostname === 'jgraph.github.io')) {
 			var iw = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 			var userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-			if (iw <= 1024 ||  /android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) &&
+			if (iw <= 1024 || /android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) &&
 				!window.MSStream) || (navigator.userAgent.match(/Mac/) &&
-				navigator.maxTouchPoints && navigator.maxTouchPoints > 2))
-			{
+					navigator.maxTouchPoints && navigator.maxTouchPoints > 2)) {
 				ui = 'simple';
 			}
 		}
 	}
-	catch (e)
-	{
+	catch (e) {
 		// ignore
 	}
 
 	// Activates sketch mode in Confluence Cloud sketch theme
 	if (ui == 'sketch' && urlParams['sketch'] == null &&
-		window.location.hostname === 'ac.draw.io')
-	{
+		window.location.hostname === 'ac.draw.io') {
 		urlParams['sketch'] = '1';
 	}
-	else if (urlParams['dark'] == '1' && (ui == '' || ui == 'kennedy'))
-	{
+	else if (urlParams['dark'] == '1' && (ui == '' || ui == 'kennedy')) {
 		ui = 'dark';
 	}
-	
+
 	return ui;
 })();
 
 /**
  * Overrides splash URL parameter via local storage
  */
-(function() 
-{
+(function () {
 	// Known issue: No JSON object at this point in quirks in IE8
-	if (typeof JSON !== 'undefined')
-	{
+	if (typeof JSON !== 'undefined') {
 		// Cannot use mxSettings here
-		if (isLocalStorage) 
-		{
-			try
-			{
+		if (isLocalStorage) {
+			try {
 				var key = (urlParams['sketch'] == '1') ? '.sketch-config' : '.drawio-config';
 				var value = localStorage.getItem(key);
 				var showSplash = true;
-				
-				if (value != null)
-				{
+
+				if (value != null) {
 					showSplash = JSON.parse(value).showStartScreen;
 				}
 
 				// Undefined means true
-				if (showSplash == false)
-				{
+				if (showSplash == false) {
 					urlParams['splash'] = '0';
 				}
 			}
-			catch (e)
-			{
+			catch (e) {
 				// ignore
 			}
 		}
 	}
-	
+
 	// Customizes export URL
 	var ex = urlParams['export'];
 
-	if (ex != null)
-	{
+	if (ex != null) {
 		ex = decodeURIComponent(ex);
-		
-		if (ex.substring(0, 7) != 'http://' &&  ex.substring(0, 8) != 'https://')
-		{
+
+		if (ex.substring(0, 7) != 'http://' && ex.substring(0, 8) != 'https://') {
 			ex = 'http://' + ex;
 		}
-		
+
 		EXPORT_URL = ex;
 	}
 
 	// Customizes gitlab URL
 	var glUrl = urlParams['gitlab'];
 
-	if (glUrl != null)
-	{
+	if (glUrl != null) {
 		glUrl = decodeURIComponent(glUrl);
-		
-		if (glUrl.substring(0, 7) != 'http://' &&  glUrl.substring(0, 8) != 'https://')
-		{
+
+		if (glUrl.substring(0, 7) != 'http://' && glUrl.substring(0, 8) != 'https://') {
 			glUrl = 'http://' + glUrl;
 		}
-		
+
 		DRAWIO_GITLAB_URL = glUrl;
 	}
-	
+
 	var glId = urlParams['gitlab-id'];
 
-	if (glId != null)
-	{
+	if (glId != null) {
 		DRAWIO_GITLAB_ID = glId;
 	}
 
@@ -416,26 +421,22 @@ window.uiTheme = window.uiTheme || (function()
 
 	//Adds hard-coded logging domain for draw.io domains
 	var host = window.location.host;
-	
-	if (host != 'test.draw.io')
-	{
+
+	if (host != 'test.draw.io') {
 		var searchString = 'diagrams.net';
 		var position = host.length - searchString.length;
 		var lastIndex = host.lastIndexOf(searchString, position);
-		
-		if (lastIndex !== -1 && lastIndex === position)
-		{
+
+		if (lastIndex !== -1 && lastIndex === position) {
 			window.DRAWIO_LOG_URL = 'https://log.diagrams.net';
 		}
-		else
-		{
+		else {
 			// For atlas integrations
 			var searchString = 'draw.io';
 			var position = host.length - searchString.length;
 			var lastIndex = host.lastIndexOf(searchString, position);
-			
-			if (lastIndex !== -1 && lastIndex === position)
-			{
+
+			if (lastIndex !== -1 && lastIndex === position) {
 				window.DRAWIO_LOG_URL = 'https://log.draw.io';
 			}
 		}
@@ -443,10 +444,9 @@ window.uiTheme = window.uiTheme || (function()
 })();
 
 // Enables offline mode
-if (urlParams['offline'] == '1' || urlParams['demo'] == '1' || 
+if (urlParams['offline'] == '1' || urlParams['demo'] == '1' ||
 	urlParams['stealth'] == '1' || urlParams['local'] == '1' ||
-	urlParams['lockdown'] == '1')
-{
+	urlParams['lockdown'] == '1') {
 	urlParams['picker'] = '0';
 	urlParams['gapi'] = '0';
 	urlParams['db'] = '0';
@@ -456,9 +456,8 @@ if (urlParams['offline'] == '1' || urlParams['demo'] == '1' ||
 	urlParams['tr'] = '0';
 }
 // Do not insert code between above and below blocks
-// se mode. Ensure this comes after the block above. 
-if (window.location.hostname == 'se.diagrams.net')
-{
+// se mode. Ensure this comes after the block above.
+if (window.location.hostname == 'se.diagrams.net') {
 	urlParams['db'] = '0';
 	urlParams['od'] = '0';
 	urlParams['gh'] = '0';
@@ -473,30 +472,25 @@ if (window.location.hostname == 'se.diagrams.net')
 }
 
 // Disables Trello client by default
-if (urlParams['mode'] == 'trello')
-{
+if (urlParams['mode'] == 'trello') {
 	urlParams['tr'] = '1';
 }
 
 // Uses embed mode on embed domain
-if (window.location.hostname == 'embed.diagrams.net')
-{
+if (window.location.hostname == 'embed.diagrams.net') {
 	urlParams['embed'] = '1';
 }
 
 // Fallback for cases where the hash property is not available
 if ((window.location.hash == null || window.location.hash.length <= 1) &&
-	urlParams['open'] != null)
-{
+	urlParams['open'] != null) {
 	window.location.hash = urlParams['open'];
 }
 
 // TODO: One day we could remove this. It's just to stop mermaid throwing syntax error on startup for pre v98 browsers
 // Maybe remove in 2027
-if (typeof window.structuredClone !== 'function')
-{
-	window.structuredClone = function(value)
-	{
+if (typeof window.structuredClone !== 'function') {
+	window.structuredClone = function (value) {
 		{
 			return value;
 		}
