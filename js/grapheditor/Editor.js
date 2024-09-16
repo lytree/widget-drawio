@@ -60,6 +60,20 @@ Editor = function(chromeless, themes, model, graph, editable)
 };
 
 /**
+ * Measurements Units
+ */
+mxConstants.POINTS = 1;
+mxConstants.MILLIMETERS = 2;
+mxConstants.INCHES = 3;
+mxConstants.METERS = 4;
+
+/**
+ * This ratio is with page scale 1
+ */
+mxConstants.PIXELS_PER_MM = 3.937;
+mxConstants.PIXELS_PER_INCH = 100;
+
+/**
  * Counts open editor tabs (must be global for cross-window access)
  */
 Editor.pageCounter = 0;
@@ -113,8 +127,7 @@ Editor.smallScreenWidth = 1024;
  */
 Editor.lightCheckmarkImage = 'data:image/gif;base64,R0lGODlhFQAVAMQfAGxsbHx8fIqKioaGhvb29nJycvr6+sDAwJqamltbW5OTk+np6YGBgeTk5Ly8vJiYmP39/fLy8qWlpa6ursjIyOLi4vj4+N/f3+3t7fT09LCwsHZ2dubm5r6+vmZmZv///yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IFdpbmRvd3MiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OEY4NTZERTQ5QUFBMTFFMUE5MTVDOTM5MUZGMTE3M0QiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OEY4NTZERTU5QUFBMTFFMUE5MTVDOTM5MUZGMTE3M0QiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Rjg1NkRFMjlBQUExMUUxQTkxNUM5MzkxRkYxMTczRCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Rjg1NkRFMzlBQUExMUUxQTkxNUM5MzkxRkYxMTczRCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAEAAB8ALAAAAAAVABUAAAVI4CeOZGmeaKqubKtylktSgCOLRyLd3+QJEJnh4VHcMoOfYQXQLBcBD4PA6ngGlIInEHEhPOANRkaIFhq8SuHCE1Hb8Lh8LgsBADs=';
 Editor.darkCheckmarkImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAMAAACeyVWkAAAARVBMVEUAAACZmZkICAgEBASNjY2Dg4MYGBiTk5N5eXl1dXVmZmZQUFBCQkI3NzceHh4MDAykpKSJiYl+fn5sbGxaWlo/Pz8SEhK96uPlAAAAAXRSTlMAQObYZgAAAE5JREFUGNPFzTcSgDAQQ1HJGUfy/Y9K7V1qeOUfzQifCQZai1XHaz11LFysbDbzgDSSWMZiETz3+b8yNUc/MMsktxuC8XQBSncdLwz+8gCCggGXzBcozAAAAABJRU5ErkJggg==';
-Editor.darkHelpImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAP1BMVEUAAAD///////////////////////////////////////////////////////////////////////////////9Du/pqAAAAFXRSTlMAT30qCJRBboyDZyCgRzUUdF46MJlgXETgAAAAeklEQVQY022O2w4DIQhEQUURda/9/28tUO2+7CQS5sgQ4F1RapX78YUwRqQjTU8ILqQfKerTKTvACJ4nLX3krt+8aS82oI8aQC4KavRgtvEW/mDvsICgA03PSGRr79MqX1YPNIxzjyqtw8ZnnRo4t5a5undtJYRywau+ds4Cyza3E6YAAAAASUVORK5CYII=';
-Editor.lightHelpImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDB6Ii8+PHBhdGggZD0iTTExIDE4aDJ2LTJoLTJ2MnptMS0xNkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6bTAtMTRjLTIuMjEgMC00IDEuNzktNCA0aDJjMC0xLjEuOS0yIDItMnMyIC45IDIgMmMwIDItMyAxLjc1LTMgNWgyYzAtMi4yNSAzLTIuNSAzLTUgMC0yLjIxLTEuNzktNC00LTR6Ii8+PC9zdmc+';
+Editor.helpImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDB6Ii8+PHBhdGggZD0iTTExIDE4aDJ2LTJoLTJ2MnptMS0xNkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6bTAtMTRjLTIuMjEgMC00IDEuNzktNCA0aDJjMC0xLjEuOS0yIDItMnMyIC45IDIgMmMwIDItMyAxLjc1LTMgNWgyYzAtMi4yNSAzLTIuNSAzLTUgMC0yLjIxLTEuNzktNC00LTR6Ii8+PC9zdmc+';
 Editor.menuImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTMgMThoMTh2LTJIM3Yyem0wLTVoMTh2LTJIM3Yyem0wLTd2MmgxOFY2SDN6Ii8+PC9zdmc+';
 Editor.moveImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI4cHgiIGhlaWdodD0iMjhweCI+PGc+PC9nPjxnPjxnPjxnPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIuNCwyLjQpc2NhbGUoMC44KXJvdGF0ZSg0NSwxMiwxMikiIHN0cm9rZT0iIzI5YjZmMiIgZmlsbD0iIzI5YjZmMiIgZD0iTTE1LDNsMi4zLDIuM2wtMi44OSwyLjg3bDEuNDIsMS40MkwxOC43LDYuN0wyMSw5VjNIMTV6IE0zLDlsMi4zLTIuM2wyLjg3LDIuODlsMS40Mi0xLjQyTDYuNyw1LjNMOSwzSDNWOXogTTksMjEgbC0yLjMtMi4zbDIuODktMi44N2wtMS40Mi0xLjQyTDUuMywxNy4zTDMsMTV2Nkg5eiBNMjEsMTVsLTIuMywyLjNsLTIuODctMi44OWwtMS40MiwxLjQybDIuODksMi44N0wxNSwyMWg2VjE1eiIvPjwvZz48L2c+PC9nPjwvc3ZnPgo=';
 Editor.zoomInImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTUuNSAxNGgtLjc5bC0uMjgtLjI3QzE1LjQxIDEyLjU5IDE2IDExLjExIDE2IDkuNSAxNiA1LjkxIDEzLjA5IDMgOS41IDNTMyA1LjkxIDMgOS41IDUuOTEgMTYgOS41IDE2YzEuNjEgMCAzLjA5LS41OSA0LjIzLTEuNTdsLjI3LjI4di43OWw1IDQuOTlMMjAuNDkgMTlsLTQuOTktNXptLTYgMEM3LjAxIDE0IDUgMTEuOTkgNSA5LjVTNy4wMSA1IDkuNSA1IDE0IDcuMDEgMTQgOS41IDExLjk5IDE0IDkuNSAxNHptMi41LTRoLTJ2Mkg5di0ySDdWOWgyVjdoMXYyaDJ2MXoiLz48L3N2Zz4=';
@@ -158,7 +171,7 @@ Editor.extensionImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3d
 Editor.colorDropperImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTYgNDJ2LTguNGwxOC44NS0xOC44NS0zLjYtMy42TDIzLjMgOS4xbDQuNiA0LjZMMzUgNi42cS41NS0uNTUgMS4xNzUtLjU1dDEuMTc1LjU1bDQuMDUgNC4wNXEuNTUuNTUuNTUgMS4xNzVUNDEuNCAxM2wtNy4xIDcuMSA0LjYgNC42LTIuMDUgMi4wNS0zLjYtMy42TDE0LjQgNDJabTMtM2g0LjM1TDMxLjEgMjEuMjVsLTQuMzUtNC4zNUw5IDM0LjY1Wm0yMy4xNS0yMSA2LjItNi4yLTIuMTUtMi4xNS02LjIgNi4yWm0wIDBMMzAgMTUuODUgMzIuMTUgMThaIi8+PC9zdmc+';
 Editor.magnifyImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjQiPjxwYXRoIGQ9Ik03ODQtMTIwIDUzMi0zNzJxLTMwIDI0LTY5IDM4dC04MyAxNHEtMTA5IDAtMTg0LjUtNzUuNVQxMjAtNTgwcTAtMTA5IDc1LjUtMTg0LjVUMzgwLTg0MHExMDkgMCAxODQuNSA3NS41VDY0MC01ODBxMCA0NC0xNCA4M3QtMzggNjlsMjUyIDI1Mi01NiA1NlpNMzgwLTQwMHE3NSAwIDEyNy41LTUyLjVUNTYwLTU4MHEwLTc1LTUyLjUtMTI3LjVUMzgwLTc2MHEtNzUgMC0xMjcuNSA1Mi41VDIwMC01ODBxMCA3NSA1Mi41IDEyNy41VDM4MC00MDBaIi8+PC9zdmc+';
 Editor.sendImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjQiPjxwYXRoIGQ9Ik0xMjAtMTYwdi02NDBsNzYwIDMyMC03NjAgMzIwWm04MC0xMjAgNDc0LTIwMC00NzQtMjAwdjE0MGwyNDAgNjAtMjQwIDYwdjE0MFptMCAwdi00MDAgNDAwWiIvPjwvc3ZnPg==';
-Editor.helpImage = Editor.lightHelpImage;
+Editor.sparklesImage = 'data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBpZD0iaWNvbnMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbD0iI2ZjZmY0NyIgZGF0YS1kYXJrcmVhZGVyLWlubGluZS1maWxsPSIiIHN0eWxlPSItLWRhcmtyZWFkZXItaW5saW5lLWZpbGw6ICNkNmQ4NTA7IC0tZGFya3JlYWRlci1pbmxpbmUtc3Ryb2tlOiAjZDZkODUwOyIgc3Ryb2tlPSIjZmNmZjQ3IiBkYXRhLWRhcmtyZWFkZXItaW5saW5lLXN0cm9rZT0iIj4KDTxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIi8+Cg08ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KDTxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4KDTxwYXRoIGQ9Ik0yNTkuOTIsMjYyLjkxLDIxNi40LDE0OS43N2E5LDksMCwwLDAtMTYuOCwwTDE1Ni4wOCwyNjIuOTFhOSw5LDAsMCwxLTUuMTcsNS4xN0wzNy43NywzMTEuNmE5LDksMCwwLDAsMCwxNi44bDExMy4xNCw0My41MmE5LDksMCwwLDEsNS4xNyw1LjE3TDE5OS42LDQ5MC4yM2E5LDksMCwwLDAsMTYuOCwwbDQzLjUyLTExMy4xNGE5LDksMCwwLDEsNS4xNy01LjE3TDM3OC4yMywzMjguNGE5LDksMCwwLDAsMC0xNi44TDI2NS4wOSwyNjguMDhBOSw5LDAsMCwxLDI1OS45MiwyNjIuOTFaIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxOS45NjgiIGRhdGEtZGFya3JlYWRlci1pbmxpbmUtc3Ryb2tlPSIiIHN0eWxlPSItLWRhcmtyZWFkZXItaW5saW5lLXN0cm9rZTogIzE4MWExYjsiLz4KDTxwb2x5Z29uIHBvaW50cz0iMTA4IDY4IDg4IDE2IDY4IDY4IDE2IDg4IDY4IDEwOCA4OCAxNjAgMTA4IDEwOCAxNjAgODggMTA4IDY4IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxOS45NjgiIGRhdGEtZGFya3JlYWRlci1pbmxpbmUtc3Ryb2tlPSIiIHN0eWxlPSItLWRhcmtyZWFkZXItaW5saW5lLXN0cm9rZTogIzE4MWExYjsiLz4KDTxwb2x5Z29uIHBvaW50cz0iNDI2LjY3IDExNy4zMyA0MDAgNDggMzczLjMzIDExNy4zMyAzMDQgMTQ0IDM3My4zMyAxNzAuNjcgNDAwIDI0MCA0MjYuNjcgMTcwLjY3IDQ5NiAxNDQgNDI2LjY3IDExNy4zMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMTkuOTY4IiBkYXRhLWRhcmtyZWFkZXItaW5saW5lLXN0cm9rZT0iIiBzdHlsZT0iLS1kYXJrcmVhZGVyLWlubGluZS1zdHJva2U6ICMxODFhMWI7Ii8+Cg08L2c+Cg08L3N2Zz4=';
 Editor.checkmarkImage = Editor.lightCheckmarkImage;
 
 /**
@@ -253,6 +266,16 @@ Editor.darkColor = (Editor.enableCssDarkMode) ? '#121212' : '#18141D';
  * Dynamic change of dark mode for minimal and sketch theme.
  */
 Editor.lightColor = '#f0f0f0';
+
+/**
+ * Label for the font size unit. Default is 'px'.
+ */
+Editor.fontSizeUnit = 'px';
+
+/**
+ * Default unit for page sizes. Default is inches.
+ */
+Editor.pageSizeUnit = mxConstants.INCHES;
 
 /**
  * Returns the current state of the dark mode.
@@ -482,6 +505,52 @@ Editor.selectSubstring = function(input, startPos, endPos)
 };
 
 /**
+ * 
+ */
+Editor.toUnit = function(value, unit)
+{
+	if (unit == mxConstants.INCHES)
+	{
+		return Math.round(value * 100 / mxConstants.PIXELS_PER_INCH) / 100;
+	}
+	else if (unit == mxConstants.MILLIMETERS)
+	{
+		return  Math.round(value * 100 / mxConstants.PIXELS_PER_MM) / 100;
+	}
+	else if (unit == mxConstants.METERS)
+	{
+		return  Math.round(value * 1000 / (mxConstants.PIXELS_PER_MM * 1000)) / 1000;
+	}
+	else
+	{
+		return Math.round(value);
+	}
+};
+
+/**
+ * 
+ */
+Editor.fromUnit = function(value, unit)
+{
+	if (unit == mxConstants.INCHES)
+	{
+		return Math.round(value * mxConstants.PIXELS_PER_INCH);
+	}
+	else if (unit == mxConstants.MILLIMETERS)
+	{
+		return Math.round(value * mxConstants.PIXELS_PER_MM);
+	}
+	else if (unit == mxConstants.METERS)
+	{
+		return Math.round(value * mxConstants.PIXELS_PER_MM * 1000);
+	}
+	else
+	{
+		return Math.round(value);
+	}
+};
+
+/**
  * Editor inherits from mxEventSource
  */
 mxUtils.extend(Editor, mxEventSource);
@@ -549,7 +618,7 @@ Editor.prototype.appName = document.title;
 /**
  * 
  */
-Editor.prototype.editBlankUrl = window.location.protocol + '//' + window.location.host + '/';
+Editor.prototype.editBlankUrl = window.location.origin + window.location.pathname;
 
 /**
  * Default value for the graph container overflow style.
@@ -919,15 +988,12 @@ Editor.prototype.createUndoManager = function()
 	// Keeps the selection in sync with the history
 	var undoHandler = function(sender, evt)
 	{
-		var cand = graph.getSelectionCellsForChanges(evt.getProperty('edit').changes, function(change)
-		{
-			// Only selects changes to the cell hierarchy
-			return !(change instanceof mxChildChange);
-		});
+		var changes = evt.getProperty('edit').changes;
+		var cand = graph.getSelectionCellsForChanges(changes);
+		var scrolled = false;
 		
 		if (cand.length > 0)
 		{
-			var model = graph.getModel();
 			var cells = [];
 			
 			for (var i = 0; i < cand.length; i++)
@@ -935,6 +1001,12 @@ Editor.prototype.createUndoManager = function()
 				if (graph.view.getState(cand[i]) != null)
 				{
 					cells.push(cand[i]);
+
+					if (!scrolled)
+					{
+						graph.scrollCellToVisible(cand[i]);
+						scrolled = true;
+					}
 				}
 			}
 			
@@ -1354,8 +1426,8 @@ var ErrorDialog = function(editorUi, title, message, buttonText, fn, retry, butt
 	{
 		message = message.replace(/\n/g, '<br/>');
 	}
-
-	p2.innerHTML = message;
+	
+	p2.innerHTML = Graph.sanitizeHtml(message);
 	div.appendChild(p2);
 	
 	var btns = document.createElement('div');
@@ -1437,9 +1509,9 @@ var ErrorDialog = function(editorUi, title, message, buttonText, fn, retry, butt
 /**
  * Constructs a new print dialog.
  */
-var PrintDialog = function(editorUi, title)
+var PrintDialog = function(editorUi, title, fn)
 {
-	this.create(editorUi, title);
+	this.create(editorUi, title, fn);
 };
 
 /**
@@ -1722,20 +1794,6 @@ PrintDialog.createPrintPreview = function(graph, scale, pf, border, x0, y0, auto
 		return graph.getAbsoluteUrl(getLinkForCellState.apply(this, arguments));
 	};
 
-	var writeHead = preview.writeHead;
-	
-	// Adds a border in the preview
-	preview.writeHead = function(doc)
-	{
-		writeHead.apply(this, arguments);
-		
-		doc.writeln('<style type="text/css">');
-		doc.writeln('@media screen {');
-		doc.writeln('  body > div { padding:30px;box-sizing:content-box; }');
-		doc.writeln('}');
-		doc.writeln('</style>');
-	};
-	
 	return preview;
 };
 
@@ -1976,13 +2034,16 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 	landscapeCheckBox.setAttribute('value', 'landscape');
 	
 	var paperSizeSelect = document.createElement('select');
-	paperSizeSelect.style.marginBottom = '8px';
+	paperSizeSelect.style.marginBottom = '4px';
 	paperSizeSelect.style.borderRadius = '4px';
 	paperSizeSelect.style.borderWidth = '1px';
 	paperSizeSelect.style.borderStyle = 'solid';
+	paperSizeSelect.style.boxSizing = 'border-box';
+	paperSizeSelect.style.padding = '2px';
 	paperSizeSelect.style.width = '206px';
 
 	var formatDiv = document.createElement('div');
+	formatDiv.style.whiteSpace = 'nowrap';
 	formatDiv.style.marginLeft = '4px';
 	formatDiv.style.width = '210px';
 	formatDiv.style.height = '24px';
@@ -2005,21 +2066,43 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 	formatDiv.appendChild(landscapeSpan)
 
 	var customDiv = document.createElement('div');
+	customDiv.style.whiteSpace = 'nowrap';
 	customDiv.style.marginLeft = '4px';
+	customDiv.style.fontSize = '12px';
 	customDiv.style.width = '210px';
 	customDiv.style.height = '24px';
 	
 	var widthInput = document.createElement('input');
 	widthInput.setAttribute('size', '7');
+	widthInput.setAttribute('title', mxResources.get('width'));
 	widthInput.style.textAlign = 'right';
 	customDiv.appendChild(widthInput);
-	mxUtils.write(customDiv, ' in x ');
+	mxUtils.write(customDiv, ' x ');
 	
 	var heightInput = document.createElement('input');
 	heightInput.setAttribute('size', '7');
+	heightInput.setAttribute('title', mxResources.get('height'));
 	heightInput.style.textAlign = 'right';
 	customDiv.appendChild(heightInput);
-	mxUtils.write(customDiv, ' in');
+
+	var unitSelect = document.createElement('select');
+	unitSelect.style.marginLeft = '4px';
+	unitSelect.style.maxWidth = '78px';
+	unitSelect.style.width = '78px';
+	var units = [{label: mxResources.get('points'), unit: mxConstants.POINTS},
+		{label: mxResources.get('inches'), unit: mxConstants.INCHES},
+		{label: mxResources.get('millimeters'), unit: mxConstants.MILLIMETERS}];
+
+	for (var i = 0; i < units.length; i++)
+	{
+		var unitOption = document.createElement('option');
+		unitOption.setAttribute('value', units[i].unit);
+		mxUtils.write(unitOption, units[i].label);
+		unitSelect.appendChild(unitOption);
+	}
+
+	unitSelect.value = Editor.pageSizeUnit;
+	customDiv.appendChild(unitSelect);
 
 	formatDiv.style.display = 'none';
 	customDiv.style.display = 'none';
@@ -2038,97 +2121,83 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 		paperSizeSelect.appendChild(paperSizeOption);
 	}
 	
-	var customSize = false;
-	
-	function listener(sender, evt, force)
+	var listener = function()
 	{
-		if (force || (widthInput != document.activeElement && heightInput != document.activeElement))
+		paperSizeSelect.value = 'custom';
+
+		for (var i = 0; i < formats.length; i++)
 		{
-			var detected = false;
-			
-			for (var i = 0; i < formats.length; i++)
+			var f = formats[i];
+
+			if (f.format != null)
 			{
-				var f = formats[i];
-	
-				// Special case where custom was chosen
-				if (customSize)
+				// Fixes wrong values for previous A4 and A5 page sizes
+				if (f.key == 'a4')
 				{
-					if (f.key == 'custom')
+					if (pageFormat.width == 826)
 					{
-						paperSizeSelect.value = f.key;
-						customSize = false;
+						pageFormat = mxRectangle.fromRectangle(pageFormat);
+						pageFormat.width = 827;
+					}
+					else if (pageFormat.height == 826)
+					{
+						pageFormat = mxRectangle.fromRectangle(pageFormat);
+						pageFormat.height = 827;
 					}
 				}
-				else if (f.format != null)
+				else if (f.key == 'a5')
 				{
-					// Fixes wrong values for previous A4 and A5 page sizes
-					if (f.key == 'a4')
+					if (pageFormat.width == 584)
 					{
-						if (pageFormat.width == 826)
-						{
-							pageFormat = mxRectangle.fromRectangle(pageFormat);
-							pageFormat.width = 827;
-						}
-						else if (pageFormat.height == 826)
-						{
-							pageFormat = mxRectangle.fromRectangle(pageFormat);
-							pageFormat.height = 827;
-						}
+						pageFormat = mxRectangle.fromRectangle(pageFormat);
+						pageFormat.width = 583;
 					}
-					else if (f.key == 'a5')
+					else if (pageFormat.height == 584)
 					{
-						if (pageFormat.width == 584)
-						{
-							pageFormat = mxRectangle.fromRectangle(pageFormat);
-							pageFormat.width = 583;
-						}
-						else if (pageFormat.height == 584)
-						{
-							pageFormat = mxRectangle.fromRectangle(pageFormat);
-							pageFormat.height = 583;
-						}
-					}
-					
-					if (pageFormat.width == f.format.width && pageFormat.height == f.format.height)
-					{
-						paperSizeSelect.value = f.key;
-						portraitCheckBox.setAttribute('checked', 'checked');
-						portraitCheckBox.defaultChecked = true;
-						portraitCheckBox.checked = true;
-						landscapeCheckBox.removeAttribute('checked');
-						landscapeCheckBox.defaultChecked = false;
-						landscapeCheckBox.checked = false;
-						detected = true;
-					}
-					else if (pageFormat.width == f.format.height && pageFormat.height == f.format.width)
-					{
-						paperSizeSelect.value = f.key;
-						portraitCheckBox.removeAttribute('checked');
-						portraitCheckBox.defaultChecked = false;
-						portraitCheckBox.checked = false;
-						landscapeCheckBox.setAttribute('checked', 'checked');
-						landscapeCheckBox.defaultChecked = true;
-						landscapeCheckBox.checked = true;
-						detected = true;
+						pageFormat = mxRectangle.fromRectangle(pageFormat);
+						pageFormat.height = 583;
 					}
 				}
+				
+				if (pageFormat.width == f.format.width && pageFormat.height == f.format.height)
+				{
+					paperSizeSelect.value = f.key;
+					portraitCheckBox.setAttribute('checked', 'checked');
+					portraitCheckBox.defaultChecked = true;
+					portraitCheckBox.checked = true;
+					landscapeCheckBox.removeAttribute('checked');
+					landscapeCheckBox.defaultChecked = false;
+					landscapeCheckBox.checked = false;
+					detected = true;
+				}
+				else if (pageFormat.width == f.format.height && pageFormat.height == f.format.width)
+				{
+					paperSizeSelect.value = f.key;
+					portraitCheckBox.removeAttribute('checked');
+					portraitCheckBox.defaultChecked = false;
+					portraitCheckBox.checked = false;
+					landscapeCheckBox.setAttribute('checked', 'checked');
+					landscapeCheckBox.defaultChecked = true;
+					landscapeCheckBox.checked = true;
+					detected = true;
+				}
 			}
-			
-			// Selects custom format which is last in list
-			if (!detected)
-			{
-				widthInput.value = pageFormat.width / 100;
-				heightInput.value = pageFormat.height / 100;
-				portraitCheckBox.setAttribute('checked', 'checked');
-				paperSizeSelect.value = 'custom';
-				formatDiv.style.display = 'none';
-				customDiv.style.display = '';
-			}
-			else
-			{
-				formatDiv.style.display = '';
-				customDiv.style.display = 'none';
-			}
+		}
+		
+		// Selects custom format which is last in list
+		if (paperSizeSelect.value == 'custom')
+		{
+			widthInput.value = Editor.toUnit(pageFormat.width, unitSelect.value);
+			heightInput.value = Editor.toUnit(pageFormat.height, unitSelect.value);
+			portraitCheckBox.setAttribute('checked', 'checked');
+			paperSizeSelect.value = 'custom';
+			formatDiv.style.display = 'none';
+			customDiv.style.display = '';
+		}
+		else
+		{
+			formatDiv.style.display = '';
+			customDiv.style.display = 'none';
 		}
 	};
 	
@@ -2136,20 +2205,20 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 
 	div.appendChild(paperSizeSelect);
 	mxUtils.br(div);
-
 	div.appendChild(formatDiv);
 	div.appendChild(customDiv);
 	
-	var currentPageFormat = pageFormat;
-	
-	var update = function(evt, selectChanged)
+	var update = function(evt, quiet)
 	{
 		var f = pf[paperSizeSelect.value];
-		
+
 		if (f.format != null)
 		{
-			widthInput.value = f.format.width / 100;
-			heightInput.value = f.format.height / 100;
+			widthInput.value = Editor.toUnit((!landscapeCheckBox.checked) ?
+				f.format.width : f.format.height, unitSelect.value);
+			heightInput.value = Editor.toUnit((!landscapeCheckBox.checked) ?
+				f.format.height : f.format.width, unitSelect.value);
+
 			customDiv.style.display = 'none';
 			formatDiv.style.display = '';
 		}
@@ -2163,35 +2232,30 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 		
 		if (isNaN(wi) || wi <= 0)
 		{
-			widthInput.value = pageFormat.width / 100;
+			widthInput.value = Editor.toUnit(pageFormat.width, unitSelect.value);
 		}
 		
 		var hi = parseFloat(heightInput.value);
 		
 		if (isNaN(hi) || hi <= 0)
 		{
-			heightInput.value = pageFormat.height / 100;
+			heightInput.value = Editor.toUnit(pageFormat.height, unitSelect.value);
 		}
 		
 		var newPageFormat = new mxRectangle(0, 0,
-			Math.floor(parseFloat(widthInput.value) * 100),
-			Math.floor(parseFloat(heightInput.value) * 100));
-		
-		if (paperSizeSelect.value != 'custom' && landscapeCheckBox.checked)
-		{
-			newPageFormat = new mxRectangle(0, 0, newPageFormat.height, newPageFormat.width);
-		}
+			Math.floor(Editor.fromUnit(parseFloat(widthInput.value), unitSelect.value)),
+			Math.floor(Editor.fromUnit(parseFloat(heightInput.value), unitSelect.value)));
 		
 		// Initial select of custom should not update page format to avoid update of combo
-		if ((!selectChanged || !customSize) && (newPageFormat.width != currentPageFormat.width ||
-			newPageFormat.height != currentPageFormat.height))
+		if (!quiet && (newPageFormat.width != pageFormat.width ||
+			newPageFormat.height != pageFormat.height))
 		{
-			currentPageFormat = newPageFormat;
-			
+			pageFormat = newPageFormat;
+
 			// Updates page format and reloads format panel
 			if (pageFormatListener != null)
 			{
-				pageFormatListener(currentPageFormat);
+				pageFormatListener(pageFormat);
 			}
 		}
 	};
@@ -2218,12 +2282,19 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 	mxEvent.addListener(portraitCheckBox, 'change', update);
 	mxEvent.addListener(paperSizeSelect, 'change', function(evt)
 	{
-		// Handles special case where custom was chosen
-		customSize = paperSizeSelect.value == 'custom';
-		update(evt, true);
+		update(evt, paperSizeSelect.value == 'custom');
+		mxEvent.consume(evt);
 	});
-	
-	update();
+	mxEvent.addListener(unitSelect, 'change', function(evt)
+	{
+		widthInput.value = Editor.toUnit(Editor.fromUnit(widthInput.value, Editor.pageSizeUnit), unitSelect.value);
+		heightInput.value = Editor.toUnit(Editor.fromUnit(heightInput.value, Editor.pageSizeUnit), unitSelect.value);
+		Editor.pageSizeUnit = unitSelect.value;
+		update(evt, true);
+		mxEvent.consume(evt);
+	});
+
+	update(null, true);
 	
 	return {set: function(value)
 	{
@@ -2231,7 +2302,7 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 		listener(null, null, true);
 	},get: function()
 	{
-		return currentPageFormat;
+		return pageFormat;
 	}, widthInput: widthInput,
 		heightInput: heightInput};
 };
@@ -2462,15 +2533,9 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label,
 	});
 	cancelBtn.className = 'geBtn';
 	
-	if (helpLink != null && (!editorUi.isOffline() || mxClient.IS_CHROMEAPP))
+	if (helpLink != null && !editorUi.isOffline())
 	{
-		var helpBtn = mxUtils.button(mxResources.get('help'), function()
-		{
-			editorUi.editor.graph.openLink(helpLink);
-		});
-		
-		helpBtn.className = 'geBtn';	
-		row.appendChild(helpBtn);
+		row.appendChild(editorUi.createHelpIcon(helpLink));
 	}
 
 	if (editorUi.editor.cancelFirst)
@@ -2526,14 +2591,11 @@ FilenameDialog.createFileTypes = function(editorUi, nameInput, types)
 		var idx2 = nameInput.value.lastIndexOf('.drawio.');
 		var idx = (idx2 > 0) ? idx2 : nameInput.value.lastIndexOf('.');
 
-		/* 👇 SIYUAN 👇 */
-		// 删除拓展名的 .drawio. 前綴
-		// if (ext != 'drawio')
-		// {
-		// 	ext = 'drawio.' + ext;
-		// }
-		/* 👆 SIYUAN 👆 */
-
+		if (ext != 'drawio')
+		{
+			ext = 'drawio.' + ext;
+		}
+		
 		if (idx > 0)
 		{
 			nameInput.value = nameInput.value.substring(0, idx + 1) + ext;
@@ -2842,7 +2904,7 @@ var WrapperWindow = function(editorUi, title, x, y, w, h, fn)
 		// KNOWN: Rounding errors for certain scales (eg. 144%, 121% in Chrome, FF and Safari). Workaround
 		// in Chrome is to use 100% for the svg size, but this results in blurred grid for large diagrams.
 		var size = tmp2;
-		var svg =  '<svg width="' + size + '" height="' + size + '" xmlns="' + mxConstants.NS_SVG + '">' +
+		var svg = '<svg width="' + size + '" height="' + size + '" xmlns="' + mxConstants.NS_SVG + '">' +
 		    '<defs><pattern id="grid" width="' + tmp2 + '" height="' + tmp2 + '" patternUnits="userSpaceOnUse">' +
 		    '<path d="' + d.join(' ') + '" fill="none" stroke="' + color + '" opacity="0.2" stroke-width="1"/>' +
 		    '<path d="M ' + tmp2 + ' 0 L 0 0 0 ' + tmp2 + '" fill="none" stroke="' + color + '" stroke-width="1"/>' +

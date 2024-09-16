@@ -15,11 +15,14 @@ window.mxLoadSettings = window.mxLoadSettings || urlParams['configure'] != '1';
 // Checks for SVG support
 window.isSvgBrowser = true;
 
+// Checks for Mermaid support
+window.isMermaidEnabled = typeof structuredClone === 'function';
+
 // CUSTOM_PARAMETERS - URLs for save and export
 // Base URL defines cases where an absolute URL is needed (eg. embedding)
 window.DRAWIO_BASE_URL = window.DRAWIO_BASE_URL || ((/.*\.draw\.io$/.test(window.location.hostname)) || (/.*\.diagrams\.net$/.test(window.location.hostname)) ?
 	window.location.protocol + '//' + window.location.hostname : 'https://app.diagrams.net');
-window.DRAWIO_SERVER_URL = window.DRAWIO_SERVER_URL || (window.location.hostname == 'test.draw.io' ? 'https://ac.draw.io/' : '');
+window.DRAWIO_SERVER_URL = window.DRAWIO_SERVER_URL || window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/';
 window.DRAWIO_LIGHTBOX_URL = window.DRAWIO_LIGHTBOX_URL || 'https://viewer.diagrams.net';
 window.EXPORT_URL = window.EXPORT_URL || 'https://convert.diagrams.net/node/export';
 window.PLANT_URL = window.PLANT_URL || 'https://plant-aws.diagrams.net';
@@ -184,61 +187,6 @@ if (window.mxLanguages == null)
 			window.mxLanguages.push(lang);
 		}
 	}
-
-	/* 👇 SIYUAN 👇 */
-	// 设置语言
-	if (window.mxLanguage == null && window.mxIsSiyuan) {
-		switch (window.top.siyuan?.config.appearance.lang) {
-			case 'en_US':
-				window.mxLanguage = 'en';
-				break;
-			case 'es_ES':
-				window.mxLanguage = 'es';
-				break;
-			case 'fr_FR':
-				window.mxLanguage = 'fr';
-				break;
-			case 'zh_CN':
-				window.mxLanguage = 'zh';
-				break;
-			case 'zh_CHT':
-				window.mxLanguage = 'zh-tw';
-				break;
-			default:
-				let lang = navigator.language;
-				switch (true) {
-					case lang.startsWith("zh-CNS"):
-						window.mxLanguage = "zh";
-						break;
-					case lang.startsWith("zh-CNT"):
-						window.mxLanguage = "zh-tw";
-						break;
-
-					case lang.startsWith("zh-Hans"):
-					case lang.startsWith("zh-CN"):
-					case lang.startsWith("zh-SG"):
-						window.mxLanguage = "zh";
-						break;
-
-					case lang.startsWith("zh-Hant"):
-					case lang.startsWith("zh-TW"):
-					case lang.startsWith("zh-HK"):
-					case lang.startsWith("zh-MO"):
-						window.mxLanguage = "zh-tw";
-						break;
-
-					case lang.startsWith("zh"):
-						window.mxLanguage = "zh";
-						break;
-					
-					default:
-						window.mxLanguage = window.mxLanguages.find(l => lang.startsWith(l));
-						break;
-				}
-				break;
-		}
-	}
-	/* 👆 SIYUAN 👆 */
 
 	// Uses browser language if supported
 	if (window.mxLanguage == null &&
@@ -541,4 +489,16 @@ if ((window.location.hash == null || window.location.hash.length <= 1) &&
 	urlParams['open'] != null)
 {
 	window.location.hash = urlParams['open'];
+}
+
+// TODO: One day we could remove this. It's just to stop mermaid throwing syntax error on startup for pre v98 browsers
+// Maybe remove in 2027
+if (typeof window.structuredClone !== 'function')
+{
+	window.structuredClone = function(value)
+	{
+		{
+			return value;
+		}
+	}
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2006-2020, JGraph Ltd
- * 
+ *
  * This provides an indirection to make sure the mxClient.js
  * loads before the dependent classes below are loaded. This
  * is used for development mode where the JS is in separate
@@ -21,6 +21,12 @@ if (!mxIsElectron && !mxIsSiyuan && location.protocol !== 'http:')
 			//----------------------------------------------------------//
 			//------------- Bootstrap script in index.html -------------//
 			//----------------------------------------------------------//
+			// Version 24.4.4
+			'\'sha256-f6cHSTUnCvbQqwa6rKcbWIpgN9dLl0ROfpEKTQUQPr8=\' ' +
+			// Version 24.3.2
+			'\'sha256-qgjuMiWd1HsOihB9Ppd7j72lY0gT8BpBkiRIJFO3sRQ=\' ' +
+			// Version 24.2.6
+			'\'sha256-CuxCZzdV/xHExthsNvH0rD+sU8zQAaYT5XLu6LHfH78=\' ' +
 			// Version 21.7.0
 			'\'sha256-dLMFD7ijAw6AVaqecS7kbPcFFzkxQ+yeZSsKpOdLxps=\' ' +
 			// Version 21.6.7
@@ -51,31 +57,31 @@ if (!mxIsElectron && !mxIsSiyuan && location.protocol !== 'http:')
 			'\'sha256-nzHi23DROym7G011m6y0DyDd9mvQL2hSJ0Gy3g2T/5Q=\' ' + // dropins.js
 			'\'sha256-xjAW8oXqJlP0CWqxT9s80kgOtOjvENMmfnnfulL6p1A=\' ' + // gapi
 			'\'unsafe-hashes\'; '; // Required for hashes for style attribute
-		
+
 		var directives = 'connect-src %connect-src% \'self\' https://*.draw.io https://*.diagrams.net ' +
 			'https://*.googleapis.com wss://app.diagrams.net wss://*.pusher.com https://*.pusher.com ' +
 			'https://api.github.com https://raw.githubusercontent.com https://gitlab.com ' +
-			'https://graph.microsoft.com https://*.sharepoint.com  https://*.1drv.com https://api.onedrive.com ' +
+			'https://graph.microsoft.com https://my.microsoftpersonalcontent.com https://*.sharepoint.com  https://*.1drv.com https://api.onedrive.com ' +
 			'https://dl.dropboxusercontent.com https://api.openai.com ' +
 			'https://*.google.com https://fonts.gstatic.com https://fonts.googleapis.com; ' +
 			// font-src about: is required for MathJax HTML-CSS output with STIX
-			'img-src * data: blob:; media-src * data:; font-src * about:; ' +
+			'img-src * data: blob:; media-src * data:; font-src * data: about:; ' +
 			// www.draw.io required for browser data migration to app.diagrams.net and
 			// viewer.diagrams.net required for iframe embed preview
 			'frame-src %frame-src% \'self\' https://viewer.diagrams.net https://www.draw.io https://*.google.com; ' +
-			'style-src %style-src% \'self\'  https://fonts.googleapis.com ' +
+			'style-src %style-src% \'self\' https://fonts.googleapis.com ' +
 			// Replaces unsafe-inline style-src with hashes with safe-style-src URL parameter
 			((urlParams['safe-style-src'] == '1') ? styleHashes : '\'unsafe-inline\'; ') +
 			'base-uri \'none\';' +
 			'child-src \'self\';' +
 			'object-src \'none\';';
-			
+
 		var csp = hashes + directives;
 		var devCsp = csp.
 			// Adds script tags and loads shapes with eval
 			replace(/%script-src%/g, 'https://www.dropbox.com https://api.trello.com \'unsafe-eval\'').
 			// Adds Trello and Dropbox backend storage
-			replace(/%connect-src%/g, 'https://*.dropboxapi.com https://trello.com https://api.trello.com').
+			replace(/%connect-src%/g, 'https://*.dropboxapi.com https://trello.com https://api.trello.com https://my.microsoftpersonalcontent.com').
 			// Loads common.css from mxgraph
 			replace(/%style-src%/g, '').
 			replace(/%frame-src%/g, '').
@@ -90,14 +96,14 @@ if (!mxIsElectron && !mxIsSiyuan && location.protocol !== 'http:')
 				replace(/%connect-src%/g, 'https://*.dropboxapi.com https://api.trello.com').
 				replace(/%frame-src%/g, '').
 					replace(/%style-src%/g, '').
-					replace(/  /g, ' ') + ' frame-ancestors \'self\' https://teams.microsoft.com;';
+					replace(/  /g, ' ') + ' frame-ancestors \'self\' https://teams.microsoft.com https://*.cloud.microsoft;';
 			console.log('app.diagrams.net:', app_diagrams_net);
 
 			var viewer_diagrams_net = hashes.replace(/%script-src%/g, 'https://www.dropbox.com https://api.trello.com https://app.diagrams.net') +
 				'connect-src *; ' +
 				'img-src * data: blob:; ' +
 				'media-src * data:; ' +
-				'font-src * about:; ' +
+				'font-src * data: about:; ' +
 				'style-src \'self\' https://fonts.googleapis.com \'unsafe-inline\'; ' +
 				'base-uri \'none\';' +
 				'object-src \'none\';' +
@@ -109,7 +115,7 @@ if (!mxIsElectron && !mxIsSiyuan && location.protocol !== 'http:')
 
 			var ac_draw_io = csp.replace(/%script-src%/g, 'https://aui-cdn.atlassian.com https://connect-cdn.atl-paas.net').
 					replace(/%frame-src%/g, 'https://www.lucidchart.com https://app.lucidchart.com https://lucid.app blob:').
-					replace(/%style-src%/g, 'https://aui-cdn.atlassian.com https://*.atlassian.net').
+					replace(/%style-src%/g, 'https://aui-cdn.atlassian.com https://*.atlassian.net https://connect-cdn.atl-paas.net').
 					replace(/%connect-src%/g, '').
 					replace(/  /g, ' ') +
 					'worker-src https://ac.draw.io/service-worker.js;';
@@ -117,7 +123,7 @@ if (!mxIsElectron && !mxIsSiyuan && location.protocol !== 'http:')
 
 			var aj_draw_io = csp.replace(/%script-src%/g, 'https://aui-cdn.atlassian.com https://connect-cdn.atl-paas.net').
 					replace(/%frame-src%/g, 'blob:').
-					replace(/%style-src%/g, 'https://aui-cdn.atlassian.com https://*.atlassian.net').
+					replace(/%style-src%/g, 'https://aui-cdn.atlassian.com https://*.atlassian.net https://connect-cdn.atl-paas.net').
 					replace(/%connect-src%/g, 'https://api.atlassian.com https://api.media.atlassian.com').
 					replace(/  /g, ' ') +
 					'worker-src https://aj.draw.io/service-worker.js;';
@@ -204,6 +210,7 @@ mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-Office.js');
 mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-PID.js');
 mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-Rack.js');
 mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-Salesforce.js');
+mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-SAP.js');
 mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-Signs.js');
 mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-Sitemap.js');
 mxscript(drawDevUrl + 'js/diagramly/sidebar/Sidebar-Sysml.js');
@@ -230,7 +237,7 @@ mxscript(drawDevUrl + 'js/diagramly/Editor.js');
 mxscript(drawDevUrl + 'js/diagramly/EditorUi.js');
 mxscript(drawDevUrl + 'js/diagramly/DiffSync.js');
 mxscript(drawDevUrl + 'js/diagramly/Settings.js');
-mxscript(drawDevUrl + 'js/diagramly/DrawioFilePuller.js');
+mxscript(drawDevUrl + 'js/diagramly/DrawioFilePolling.js');
 mxscript(drawDevUrl + 'js/diagramly/DrawioFileSync.js');
 
 //Comments
@@ -275,7 +282,7 @@ mxscript(drawDevUrl + 'js/diagramly/DevTools.js');
 if (!window.DRAWIO_PUBLIC_BUILD)
 {
 	mxscript(drawDevUrl + 'js/diagramly/Simple.js');
-	mxscript(drawDevUrl + 'js/mermaid/mermaid2drawio.js');	
+	mxscript(drawDevUrl + 'js/mermaid/mermaid2drawio.js');
 }
 
 // Vsdx/vssx support
